@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Party n° {{ id }}  {% endblock %}
+
+{% block body %}
+    <h1>Party n° {{ id }} </h1>
+    Name : {{ name }}
+    
+    <br>
+    <br>
+    <div>
+        Currently connected Players :
+        {% for player in players %}
+            <li> 
+                {{ player.name }} ({{player.id}})
+            </li>
+        {% endfor %}
+    </div>
+    <br>
+    <br>
+    <div>
+        <a href="{{ path('party_connect',{'id':id}) }}"> Add a new Player + </a>
+    </div>
+    <br>
+{% endblock %}

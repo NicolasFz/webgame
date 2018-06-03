@@ -7,6 +7,11 @@
     </head>
     <body>
         {% block body %}{% endblock %}
+        {% block body_footer %}
+            <div>
+                <a href=" {{ path('home') }}"> Return Home << </a>
+            </div>
+        {% endblock %}
         {% block javascripts %}{% endblock %}
     </body>
 </html>
