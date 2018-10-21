@@ -11,6 +11,11 @@
         $collectionHolder = $('ul.questions');
         console.log($collectionHolder);
         console.log( $newLinkLi);
+
+        // add the "Remove this question" on existings questions
+        $collectionHolder.find('li').each(function() {
+            addQuestionFormDeleteLink($(this));
+        });
         // add the "add a question" anchor and li to the tags ul
         $collectionHolder.append($newLinkLi);
 
@@ -18,10 +23,13 @@
         // index when inserting a new item (e.g. 2)
         $collectionHolder.data('index', $collectionHolder.find(':input').length);
 
+
         $addQuestionButton.on('click', function(e) {
             // add a new question form (see next code block)
             addQuestionForm($collectionHolder, $newLinkLi);
         });
+
+
     });
 
     function addQuestionForm($collectionHolder, $newLinkLi) {
@@ -44,7 +52,19 @@
         // increase the index with one for the next item
         $collectionHolder.data('index', index + 1);
     
-        // Display the form in the page in an li, before the "Add a tag" link li
+        // Display the form in the page in an li, before the "Add a question" link li
         var $newFormLi = $('<li></li>').append(newForm);
+        addQuestionFormDeleteLink($newFormLi);
+
         $newLinkLi.before($newFormLi);
+
+    }
+
+    function addQuestionFormDeleteLink($questionFormLi) {
+        var $removeFormButton = $('<button type="button">Delete this question</button>');
+        $questionFormLi.append($removeFormButton);
+    
+        $removeFormButton.on('click', function(e) {
+            $questionFormLi.remove();
+        });
     }

@@ -21,16 +21,14 @@ class PartyController extends Controller
     public function new(Request $request,PartyManager $partyManager)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        
-        //TO-DO : Generate a random and unique name for each party
+
         $newParty = new Party();
         $form = $this->createForm(PartyType::class, $newParty);
 
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$task` variable has also been updated
+
             $newParty = $form->getData();
 
             $partyManager->saveNewParty($newParty);
@@ -83,7 +81,7 @@ class PartyController extends Controller
     /**
     * @Route("/party/{id}", name="party_show")
     */
-   public function show(Request $request,$id)
+   public function show(Request $request,$id,PartyManager $partyManager)
    {
        $party = $this->getDoctrine()
            ->getRepository(Party::class)
@@ -100,8 +98,9 @@ class PartyController extends Controller
 
         $form->handleRequest($request);
         
-        if ($form->isSubmitted() && $form->isValid()) {
-            //TO-DO
+        if ($form->isSubmitted() && $form->isValid()) {    
+            $party = $form->getData();
+            $partyManager->updateParty($party);
         }
     
         return $this->render('webgame/party/show.html.twig', [

@@ -34,7 +34,7 @@ class Party
     private $players;
     
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="party")
+     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="party",cascade={"persist"})
      */
     private $questions;
 
@@ -122,9 +122,14 @@ class Party
 
     public function addQuestion(Question $question): self
     {
-        if (!$this->questions->contains($question)) {
+
+        if (!$this->questions->contains($question) && !empty($question->getLabel())) {
             $this->questions[] = $question;
             $question->setParty($this);
+        }
+        
+        if(empty($question->getLabel())){
+            $this->removeQuestion($question);
         }
 
         return $this;

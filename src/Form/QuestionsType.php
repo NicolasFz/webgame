@@ -20,6 +20,7 @@ class QuestionsType extends AbstractType
             'label' => 'Add new questions',
             'by_reference' => false,
             'allow_add' => true,
+            'allow_delete' => true,
         ))
         ->add('save', SubmitType::class);
     }

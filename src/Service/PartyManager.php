@@ -36,6 +36,15 @@ class PartyManager{
     }
 
     /**
+     * Update an existing party
+     */
+    public function updateParty(Party $party){
+        $this->entityManager->persist($party);
+        $this->entityManager->flush();
+        return $party;
+    }
+
+    /**
      * Generate an unique 8 character code
      */
     private function generateUniqueCode(){

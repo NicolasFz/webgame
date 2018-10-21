@@ -37,7 +37,7 @@ class Question
         return $this->label;
     }
 
-    public function setLabel(string $label): self
+    public function setLabel(string $label = ''): self
     {
         $this->label = $label;
 
