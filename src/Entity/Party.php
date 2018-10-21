@@ -19,18 +19,29 @@ class Party
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=6)
+     * @ORM\Column(type="string", length=56)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="string", length=8)
+     */
+    private $code;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="party")
      */
     private $players;
     
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="party")
+     */
+    private $questions;
+
     public function __construct(string $name = 'none'){
         $this->setName($name);
         $this->players = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
     
     public function getId()
@@ -75,6 +86,57 @@ class Party
             // set the owning side to null (unless already changed)
             if ($player->getParty() === $this) {
                 $player->setParty(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the value of code
+     *
+     * @return  self
+     */ 
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of code
+     */ 
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @return Collection|Question[]
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions[] = $question;
+            $question->setParty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): self
+    {
+        if ($this->questions->contains($question)) {
+            $this->questions->removeElement($question);
+            // set the owning side to null (unless already changed)
+            if ($question->getParty() === $this) {
+                $question->setParty(null);
             }
         }
 

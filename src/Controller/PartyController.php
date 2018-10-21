@@ -9,15 +9,16 @@ use App\Entity\Party;
 use App\Entity\Player;
 use App\Form\PartyType;
 use App\Form\RejoinType;
+use App\Form\QuestionsType;
+use App\Service\PartyManager;
 
 class PartyController extends Controller
 {
     
-    
     /**
      * @Route("/new", name="party_new")
      */
-    public function new(Request $request)
+    public function new(Request $request,PartyManager $partyManager)
     {
         $entityManager = $this->getDoctrine()->getManager();
         
@@ -32,9 +33,7 @@ class PartyController extends Controller
             // but, the original `$task` variable has also been updated
             $newParty = $form->getData();
 
-            $entityManager->persist($newParty);
-
-            $entityManager->flush();
+            $partyManager->saveNewParty($newParty);
 
             return $this->render('webgame/party/new_party_success.html.twig', array(
                 'name' => $newParty->getName(),
@@ -50,25 +49,24 @@ class PartyController extends Controller
     /**
     * @Route("/party/rejoin", name="party_rejoin")
     */
-   public function rejoin(Request $request)
+   public function rejoin(Request $request,PartyManager $partyManager)
    {
-        
         $form = $this->createForm(RejoinType::class);
 
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            if(array_key_exists('name', $data)){
-                $name = $data['name'];
+            if(array_key_exists('code', $data)){
+                $code = $data['code'];
                 //TODO : Add this into a service
                 $party = $this->getDoctrine()
                     ->getRepository(Party::class)
-                    ->findOneByName($name);
+                    ->findOneByCode($code);
                 
                 if(!empty($party)){
-                    //TO-DO : Use a service instead of a controler : Avoid a redirect
-                    return $this->redirect($this->generateUrl('party_connect', ['id'=>$party->getId()]));
+                    $partyManager->connectToParty($party);
+                    return $this->redirect($this->generateUrl('party_show', ['id'=>$party->getId()]));
                 }else{
                      // TODO : Add error here
                 }
@@ -85,45 +83,33 @@ class PartyController extends Controller
     /**
     * @Route("/party/{id}", name="party_show")
     */
-   public function show($id)
+   public function show(Request $request,$id)
    {
        $party = $this->getDoctrine()
            ->getRepository(Party::class)
            ->find($id);
 
-       if (!$party) {
-           throw $this->createNotFoundException(
-               'No party found for id '.$id
-           );
-       }
+        if (!$party) {
+            throw $this->createNotFoundException(
+                'No party found for id '.$id
+            );
+        }
 
+        //Add the new question form on the Party Display page
+        $form = $this->createForm(QuestionsType::class, $party);
+
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            //TO-DO
+        }
+    
         return $this->render('webgame/party/show.html.twig', [
             'name' => $party->getName(),
             'id' => $party->getId(),
             'players'=> $party->getPlayers(),
+            'form' => $form->createView(),
         ]);
    }
    
-
-
-   
-   /**
-    * 
-    * @Route("/party/{id}/connect", name="party_connect")
-    */
-   public function connect(Party $party)
-   {
-        $entityManager = $this->getDoctrine()->getManager();
-        $player = new Player("New_Player");
-        $entityManager->persist($player);
-        $party->addPlayer($player);
-        $entityManager->flush();
-        return $this->render('webgame/connect.html.twig', [
-            'party_name' => $party->getName(),
-            'party_id' => $party->getId(),
-            'player_name' => $player->getName(),
-            'player_id' => $player->getId(),
-        ]);
-   }
-
 }
