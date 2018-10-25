@@ -3,10 +3,11 @@
 {% block title %} Party n° {{ id }}  {% endblock %}
 
 {% block body %}
-    <h1>Party n° {{ id }} </h1>
+    <h2>Party n° {{ id }} </h2>
     Name : {{ name }}
-    <br>
-    <br>
+    <div>
+    Use this code to connect to this party : <strong>{{code}}</strong>
+    </div>
     <div>
         Currently connected Players :
         {% for player in players %}

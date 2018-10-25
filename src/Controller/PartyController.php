@@ -31,12 +31,9 @@ class PartyController extends Controller
 
             $newParty = $form->getData();
 
-            $partyManager->saveNewParty($newParty);
+            $newParty = $partyManager->saveNewParty($newParty);
 
-            return $this->render('webgame/party/new_party_success.html.twig', array(
-                'name' => $newParty->getName(),
-                'id' => $newParty->getId(),
-            ));
+            return $this->redirect($this->generateUrl('party_show', ['id'=>$newParty->getId()]));
         }
     
         return $this->render('webgame/party/new_party.html.twig', array(
@@ -66,10 +63,16 @@ class PartyController extends Controller
                     $partyManager->connectToParty($party);
                     return $this->redirect($this->generateUrl('party_show', ['id'=>$party->getId()]));
                 }else{
-                     // TODO : Add error here
+                    $this->addFlash(
+                        'error',
+                        'Party not found!'
+                    );
                 }
             }else{
-                // TODO : Add error here
+                $this->addFlash(
+                    'error',
+                    'Code not found!'
+                );
             }
         }
     
@@ -106,6 +109,7 @@ class PartyController extends Controller
         return $this->render('webgame/party/show.html.twig', [
             'name' => $party->getName(),
             'id' => $party->getId(),
+            'code' => $party->getCode(),
             'players'=> $party->getPlayers(),
             'form' => $form->createView(),
         ]);

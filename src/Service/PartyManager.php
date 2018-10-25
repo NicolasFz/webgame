@@ -53,8 +53,6 @@ class PartyManager{
             $code = $this->generateCode();
             $existingParty = $this->entityManager->getRepository(Party::class)
             ->findByCode($code);
-            var_dump($existingParty);
-
         }while(!empty($existingParty));
         return $code;
     }
